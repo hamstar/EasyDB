@@ -41,7 +41,7 @@ The class is setup in the following way:
 To select data from the table you can use three methods.  getRows(), getRow() or read().
 
 	$where = array(
-	   'fname' => 'Jack'
+	   'fname' => 'Mary'
 	);
 
 	// Return an array of objects (each object being a row)
@@ -49,7 +49,7 @@ To select data from the table you can use three methods.  getRows(), getRow() or
 	$rs = $db->read('SELECT * FROM employees WHERE name = \'Jack\';');
 
 	// Return a single object (read: row)
-        $employee = $db->getRow('employees', $where);
+	$employee = $db->getRow('employees', $where);
 
 These methods return either and array of objects (read: rows) or a single object (row) for getRow().  Note that to return specific fields (e.g. only 'fname'), the read() method has to be used.  Queries in the read method do not get sanitized before execution.
 
