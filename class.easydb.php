@@ -13,7 +13,8 @@
 	/* CHANGELOG
 	
 	***** Version 0.4 *****
-	* Added dsn function to set login details on the fly	
+	* Added dsn function to set login details on the fly
+	* Fixed a bug whereby the connect() method was using the wrong password var
 
 	***** Version 0.3 *****
 	* Fixed a bug in the getWhereString and escape functions
@@ -95,7 +96,6 @@
 		public $sql = false;
 
 		function __construct() {
-			$this->connect();
 		}
 		
 		function __destroy() {
@@ -110,6 +110,9 @@
 				$this->pass = $m[2];
 				$this->host = $m[3];
 				$this->db = $m[4];
+echo $this->user .';'.$this->pass.';'.$this->host.';'.$this->db;
+				$this->connect();
+				return $this;
 			} else {
 				return false;
 			}
@@ -263,7 +266,7 @@
 			
 			// Connect if we are not connected
 			if(!$this->is_connected()) {
-				$this->dbh = @mysql_connect($this->host,$this->user,$this->password) or $this->error(1);
+				$this->dbh = @mysql_connect($this->host,$this->user,$this->pass) or $this->error(1);
 				@mysql_select_db($this->db) or $this->error(2);
 			} else {
 				return true;
