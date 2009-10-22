@@ -12,6 +12,9 @@
 	
 	/* CHANGELOG
 	
+	***** Version 0.4 *****
+	* Added dsn function to set login details on the fly	
+
 	***** Version 0.3 *****
 	* Fixed a bug in the getWhereString and escape functions
 	
@@ -98,6 +101,19 @@
 		function __destroy() {
 			$this->free();
 			mysql_close($this->dbh);
+		}
+
+		public function dsn($dsn) {
+			
+			if (preg_match('#mysql://(\w+):(.+)@(.+)/(.+)#', $dsn, $m)) {
+				$this->user = $m[1];
+				$this->pass = $m[2];
+				$this->host = $m[3];
+				$this->db = $m[4];
+			} else {
+				return false;
+			}
+
 		}
 
 		/**********************************************************
