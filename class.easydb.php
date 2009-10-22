@@ -110,7 +110,7 @@
 				$this->pass = $m[2];
 				$this->host = $m[3];
 				$this->db = $m[4];
-echo $this->user .';'.$this->pass.';'.$this->host.';'.$this->db;
+				
 				$this->connect();
 				return $this;
 			} else {
