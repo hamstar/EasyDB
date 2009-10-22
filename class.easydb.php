@@ -12,6 +12,11 @@
 	
 	/* CHANGELOG
 	
+	***** Version 0.4.1 *****
+	* Removed RETURN_OBJECT definition.  All rows are now returned as objects and not associative arrays
+	* Fixed a bug in the findall/find methods where the id was not returned
+	* Changed the read method to always return an array
+	
 	***** Version 0.4 *****
 	* Added dsn function to set login details on the fly
 	* Fixed a bug whereby the connect() method was using the wrong password var
@@ -39,7 +44,6 @@
 	define('DB_NAME','database_name');
 	
 	/* Default settings in constants */
-	define('RETURN_OBJECT', 1); // Set to one to return objects instead of associative arrays
 	define('DIE_ON_ERROR', 0);
 	define('ECHO_ERRORS', 1);
 	define('DEBUG_MODE', 1);
@@ -403,7 +407,8 @@
 				
 			}
 			
-			// Error out data given was not array, string, or number
+			// Error out: data given was not array, string, or number
+			// Error escaping value in EasyDB::escape() - invalid type argument.
 			return $this->error(11);
 			
 		}
@@ -426,29 +431,14 @@
 				return false;
 			}
 			
-			// Check if we want to return objects or associative arrays
-			if(RETURN_OBJECT) {
-				// Objects \\
-				while($o = mysql_fetch_object($this->resource)) {
-					$rows[] = $o; // Drop all the objects in with the objects function
-				}
-			} else {
-				// Arrays \\
-				while($a = mysql_fetch_assoc($this->resource)) {
-					$rows[] = $a; // Drop all the arrays in with the assoc function
-				}
+			// Drop all the objects into rows
+			while($o = mysql_fetch_object($this->resource)) {
+				$rows[] = $o;
 			}
 			
-			// Check if we can return one row instead of an array of rows
-			if(count($rows) > 1) {
-				return $rows;
-			} else {
-				return $rows[0]; // Drop the single array or object returned
-			}
-			
-			// Something borked
-			return false;
-			
+			// Return array of objects (or arrays)
+			return $rows;
+
 		}
 
 		/**
@@ -785,15 +775,11 @@
 			$limit .= ($limit && is_numeric($offset)) ? ",$offset" : '';
 		
 			// Run read but return false if it dies			
-			$arrays = $this->read("SELECT `$field` FROM `$table`" . $where . $limit);
+			$rows = $this->read("SELECT `$field` FROM `$table`" . $where . $limit);
 			
-			// Depending on how many rows come back set ids
-			if($this->rows() == 1) {
-				$ids = $arrays[0]['id']; // One row
-			} else {
-				foreach($arrays as $a) { // Lots, run through the ids
-					$ids[] = $a['id'];
-				}
+			// Set ids
+			foreach($rows as $r) {
+				$ids[] = $r->id;
 			}
 			
 			// Drop the ids out
@@ -812,7 +798,9 @@
 		public function find($table,$where,$field = 'id') {
 			
 			// Bounce off to findall
-			return $this->findall($table,$where,1,false,$field);
+			$rows = $this->findall($table,$where,1,false,$field);
+			
+			return $rows[0];
 			
 		}
 		
@@ -879,7 +867,9 @@
 		function getRow($table = false,$where = false) {
 			
 			// Bounce off to getRows
-			return $this->getRows($table,$where,1);
+			$rows = $this->getRows($table,$where,1);
+			
+			return $rows[0];
 		
 		}
 		
