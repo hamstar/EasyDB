@@ -6,14 +6,22 @@ DB is another database abstraction layer class.  It makes interacting with a dat
 
 There are a few configuration settings that will need to be adjusted for individual setups.  These settings are kept in php [definitions](http://php.net/define) at the start of the file.
 
-The most important settings to get you started are the connection settings and are at the very start of the file.  Adjust these to suit your environment.
+Other settings are discussed in the wiki for this project.
+
+## Authentication
+
+There are two ways to authenticate.  The first way is through the configuration settings.  Adjust these to suit your environment.
 
 	define('DB_HOST','localhost');
 	define('DB_USER','your_username');
 	define('DB_PASS','your_password');
 	define('DB_NAME','database_name');
 
-Other settings are discussed in the wiki for this project.
+You can leave these settings (or falsify them incase crackers find your db file) and use the dsn() method instead.  Assuming you have already initialized your EasyDB object you can do so like this:
+
+	$db->dsn('mysql://your_username:your_password@localhost/database_name');
+	
+The DSN method will save your details to the object and then try to connect with them so you will know if the settings are correct straight off the bat.
 
 ## Security
 
